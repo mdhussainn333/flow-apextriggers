@@ -20,3 +20,11 @@ jobs: # A Workflow run is made up of one or more jobs
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Install Salesforce CLI
+        run: |
+          # Use Node.js to install Salesforce CLI
+          npm install -g salesforce/cli
+      - name: verify sfdx installation
+        run: |
+          # Verify the installation
+          sf --version
