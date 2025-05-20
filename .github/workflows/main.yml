@@ -22,7 +22,7 @@ jobs: # A Workflow run is made up of one or more jobs
       - name: Decrypt JWT key
         run: |
           # Decrypt the JWT key file
-          openssl enc -nosalt -aes-256-cbc -d -in ${{ secrets.JWT_ENCYRPTION_KEY_FILE }} -out ${{ secrets.JWT_KEY_FILE }} -base64 -K ${{ secrets.ENCYRPTION_KEY }} -iv ${{ secrets.ENCYRPTION_IV }}
+          openssl enc -nosalt -aes-256-cbc -d -in ${{ secrets.JWT_ENCRYPTION_KEY_FILE }} -out ${{ secrets.JWT_KEY_FILE }} -base64 -K ${{ secrets.ENCRYPTION_KEY }} -iv ${{ secrets.ENCRYPTION_IV }}
       - name: Authenticate to Salesforce
         run: |
           # Authenticate to Salesforce using JWT
