@@ -27,4 +27,8 @@ jobs: # A Workflow run is made up of one or more jobs
         run: |
           # Authenticate to Salesforce using JWT
           sf org login jwt --username ${{ vars.SF_USER_NAME }} --jwt-key-file ${{ secrets.JWT_KEY_FILE }} --client-id ${{ secrets.CONSUMER_KEY }} --set-default --alias ${{ vars.SF_ALIAS }} --instance-url ${{ vars.SF_INSTANCE_URL }}
-
+      - name: Validate to Salesforce
+        run: |
+          # Validate to Salesforce
+          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --source-dir ./force-app --dry-run --wait 10
+          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --manifest ./package.xml --dry-run --wait 10
