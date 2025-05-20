@@ -1,8 +1,14 @@
 name: "My first workflow"
 run-name: "My First Run"
 
-on: [push]
-
+on:
+  # workflow_dispatch
+  push:
+    branches:
+      - feature/**
+    paths:
+      - 'force-app/**'
+    
 jobs: # A Workflow run is made up of one or more jobs
   build: #Job Name
     runs-on: ubuntu-latest
