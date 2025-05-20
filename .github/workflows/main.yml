@@ -4,22 +4,13 @@ run-name: "My First Run"
 on: [push]
 
 jobs: # A Workflow run is made up of one or more jobs
-  Explore-GitHub-Actions: #Job Name
-    runs-on: ubuntu-latest # Provided and Managed by Github
+  build: #Job Name
+    runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: Install Salesforce CLI
         run: |
           # Use Node.js to install Salesforce CLI
@@ -28,3 +19,12 @@ jobs: # A Workflow run is made up of one or more jobs
         run: |
           # Verify the installation
           sf --version
+      - name: Decrypt JWT key
+        run: |
+          # Decrypt the JWT key file
+          openssl enc -nosalt -aes-256-cbc -d -in ${{ secrets.JWT_ENCYRPTION_KEY_FILE }} -out ${{ secrets.JWT_KEY_FILE }} -base64 -K ${{ secrets.ENCYRPTION_KEY }} -iv ${{ secrets.ENCYRPTION_IV }}
+      - name: Authenticate to Salesforce
+        run: |
+          # Authenticate to Salesforce using JWT
+          sf org login jwt --username ${{ vars.SF_USER_NAME }} --jwt-key-file ${{ secrets.JWT_KEY_FILE }} --client-id ${{ secrets.CONSUMER_KEY }} --set-default --alias ${{ vars.SF_ALIAS }} --instance-url ${{ vars.SF_INSTANCE_URL }}
+
