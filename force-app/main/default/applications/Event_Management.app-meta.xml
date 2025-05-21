@@ -143,3 +143,4 @@
     <uiType>Lightning</uiType>
     <utilityBar>Event_Management_UtilityBar</utilityBar>
 </CustomApplication>
+// This file is used to define the Event Management application in Salesforce.
