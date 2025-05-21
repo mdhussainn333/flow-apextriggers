@@ -23,7 +23,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: dev # Set the environment to dev
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
