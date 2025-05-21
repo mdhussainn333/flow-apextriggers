@@ -44,6 +44,7 @@ jobs:
       - name: Run Salesforce Code Analyzer
         run: |
           # Run the Salesforce Code Analyzer
+          mkdir reports
           sf scanner run --format html --target "force-app" --engine "eslint-lwc,retire-js,pmd,cpd" --category "Design,Best Practices,Code Style,Performance,Security" --outfile reports/scan-reports.html
       - name: Decrypt JWT key
         run: |
