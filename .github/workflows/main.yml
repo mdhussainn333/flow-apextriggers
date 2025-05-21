@@ -29,31 +29,44 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          
       - name: Install Salesforce CLI
         run: |
           # Use Node.js to install Salesforce CLI
           npm install -g @salesforce/cli
+
       - name: verify sfdx installation
         run: |
           # Verify the installation
           sf --version
+
       - name: Install Salesforce Code Analyzer
         run: |
           # Install the Salesforce Code Analyzer
           sf plugins install @salesforce/sfdx-scanner
+
       - name: Run Salesforce Code Analyzer
         run: |
           # Run the Salesforce Code Analyzer
           mkdir reports
           sf scanner run --format html --target "force-app" --engine "eslint-lwc,retire-js,pmd,cpd" --category "Design,Best Practices,Code Style,Performance,Security" --outfile reports/scan-reports.html
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with: 
+          name: scan-reports
+          path: reports/scan-reports.html
+          
       - name: Decrypt JWT key
         run: |
           # Decrypt the JWT key file
           openssl enc -nosalt -aes-256-cbc -d -in ${{ secrets.JWT_ENCRYPTION_KEY_FILE }} -out ${{ secrets.JWT_KEY_FILE }} -base64 -K ${{ secrets.ENCRYPTION_KEY }} -iv ${{ secrets.ENCRYPTION_IV }}
+
       - name: Authenticate to Salesforce
         run: |
           # Authenticate to Salesforce using JWT
           sf org login jwt --username ${{ vars.SF_USER_NAME }} --jwt-key-file ${{ secrets.JWT_KEY_FILE }} --client-id ${{ secrets.CONSUMER_KEY }} --set-default --alias ${{ vars.SF_ALIAS }} --instance-url ${{ vars.SF_INSTANCE_URL }}
+          
       - name: Validate to Salesforce
         run: |
           # Validate to Salesforce
