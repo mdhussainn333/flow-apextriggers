@@ -2,15 +2,26 @@ name: "My first workflow"
 run-name: "My First Run"
 
 on:
-  # workflow_dispatch
+  workflow_dispatch:
   push:
     branches:
       - feature/**
     paths:
       - 'force-app/**'
+  pull_request:
+    branches:
+      - master
+      - main
+      - uat
+    paths:
+      - 'force-app/**'
+    types:
+      - opened
+      - synchronize
+      - closed
     
-jobs: # A Workflow run is made up of one or more jobs
-  build: #Job Name
+jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
