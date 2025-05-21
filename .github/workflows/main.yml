@@ -52,10 +52,12 @@ jobs:
           sf scanner run --format html --target "force-app" --engine "eslint-lwc,retire-js,pmd,cpd" --category "Design,Best Practices,Code Style,Performance,Security" --outfile reports/scan-reports.html
 
       - name: Upload a Build Artifact
+        if: always() # success() || failure()
         uses: actions/upload-artifact@v4.6.2
         with: 
           name: scan-reports
           path: reports/scan-reports.html
+          if-no-files-found: error
           
       - name: Decrypt JWT key
         run: |
@@ -66,7 +68,7 @@ jobs:
         run: |
           # Authenticate to Salesforce using JWT
           sf org login jwt --username ${{ vars.SF_USER_NAME }} --jwt-key-file ${{ secrets.JWT_KEY_FILE }} --client-id ${{ secrets.CONSUMER_KEY }} --set-default --alias ${{ vars.SF_ALIAS }} --instance-url ${{ vars.SF_INSTANCE_URL }}
-          
+
       - name: Validate to Salesforce
         run: |
           # Validate to Salesforce
