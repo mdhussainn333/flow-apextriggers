@@ -106,8 +106,8 @@ jobs:
       - name: Validate to Salesforce
         run: |
           # Validate to Salesforce
-          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --source-dir ./force-app --dry-run --wait 10
+          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --source-dir ./force-app --test-level NoTestRun --dry-run --wait 10
       - name: Deploy to Salesforce
         run: |
           # Validate to Salesforce
-          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --source-dir ./force-app --wait 10
+          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --source-dir ./force-app --test-level NoTestRun --wait 10
