@@ -30,6 +30,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -82,12 +83,34 @@ jobs:
           sf apex run test --target-org ${{ vars.SF_ALIAS }} --test-level ${{ env.TEST_LEVEL }} --code-coverage --result-format human --output-dir ./ --wait 10
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+          # SonarQube, SonarSource, SonarCloud, SonarScanner
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+            args: >
+              -Dsonar.apex.coverage.reportPath=test-result-codecoverage.json
+              -Dsonar.verbose=true
+              -Dsonar.language=apex
+              -Dsonar.sourceEncoding=UTF-8
+              -Dsonar.coverage.exclusions=**/*Test.cls
+              -Dsonar.exclusions=**/*.cmp,**/force-app/**/fflib_*.cls,**/*.yml,**/*.js,**/*.xml,**/*.css,**/*.html,**/*.woff2,**/*.woff,**/*.auradoc,**/*.svg,force-app/main/default/staticresources/**
+
+      # CodeCov
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          flags: Apex
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Validate to Salesforce
         run: |
           # Validate to Salesforce
           sf project deploy start --target-org ${{ vars.SF_ALIAS }} --source-dir ./force-app --dry-run --wait 10
           sf project deploy start --target-org ${{ vars.SF_ALIAS }} --manifest ./package.xml --dry-run --wait 10
+
+      - name: Deploy to Salesforce
+        run: |
+          # Validate to Salesforce
+          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --source-dir ./force-app --wait 10
+          sf project deploy start --target-org ${{ vars.SF_ALIAS }} --manifest ./package.xml --wait 10
