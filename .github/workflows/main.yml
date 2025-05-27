@@ -56,8 +56,13 @@ jobs:
         with: 
           name: scan-reports
           path: reports/scan-reports.html
-          if-no-files-found: error
-          
+          if-no-files-found: ignore
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: Decrypt JWT key
         run: |
           # Decrypt the JWT key file
