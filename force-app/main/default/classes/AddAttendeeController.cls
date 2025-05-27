@@ -22,7 +22,8 @@ public without sharing class AddAttendeeController {
                 Status__c = 'Created',
                 TicketPrice__c = eventRecord.EarlybirdActive__c ? eventRecord.EarlybirdTicketPrice__c : eventRecord.TicketPrice__c,
                 TicketType__c = eventRecord.EarlybirdActive__c ? 'Earlybird' : 'Regular',
-                VenueName__c = eventRecord.Location__r.Name,
+                VenueName__c = (eventRecord.Location__r != null) ? eventRecord.Location__r.Name : 'Unknown',
+                // VenueName__c = eventRecord.Location__r.Name,
                 TicketSent__c = false
             );
             insert as system ticket;
