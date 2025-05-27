@@ -52,6 +52,11 @@ jobs:
           # Install the Salesforce Code Analyzer
           sf plugins install @salesforce/sfdx-scanner
 
+      - name: Install Install SF DX GIT DELTA
+        run: |
+          # Install the SF DX GIT DELTA plugin
+          echo 'y' | sf plugins install sf-git-delta
+
       - name: Run Salesforce Code Analyzer
         run: |
           # Run the Salesforce Code Analyzer
