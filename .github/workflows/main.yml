@@ -19,11 +19,18 @@ on:
       - opened
       - synchronize
       - closed
+
+env:
+  ENGINES: "eslint,eslint-lwc,eslint-typescript,pmd,pmd-appexchange,retire-js,sfge,cpd"
+  CATEGORY: "Design,Best Practices,Code Style,Performance,Security"
+  OUTPUT_FILE: "reports/scan-reports.html"
+  SF_ALIAS_VAR: "prod"
+  TEST_LEVEL: "RunLocalTests"
     
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev # Set the environment to dev
+    environment: uat
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -49,7 +56,8 @@ jobs:
         run: |
           # Run the Salesforce Code Analyzer
           mkdir reports
-          sf scanner run --format html --target "force-app" --engine "eslint-lwc,retire-js,pmd,cpd" --category "Design,Best Practices,Code Style,Performance,Security" --outfile reports/scan-reports.html
+          sf scanner run --format html --target "delta/force-app/main/default" --engine ${{ env.ENGINES }} --category ${{ env.CATEGORY }} --outfile ${{ env.OUTPUT_FILE }}
+
       - name: Upload a Build Artifact
         if: always() # success() || failure()
         uses: actions/upload-artifact@v4.6.2
@@ -57,11 +65,6 @@ jobs:
           name: scan-reports
           path: reports/scan-reports.html
           if-no-files-found: ignore
-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Decrypt JWT key
         run: |
@@ -72,6 +75,18 @@ jobs:
         run: |
           # Authenticate to Salesforce using JWT
           sf org login jwt --username ${{ vars.SF_USER_NAME }} --jwt-key-file ${{ secrets.JWT_KEY_FILE }} --client-id ${{ secrets.CONSUMER_KEY }} --set-default --alias ${{ vars.SF_ALIAS }} --instance-url ${{ vars.SF_INSTANCE_URL }}
+
+      - name: Run the LocalTest Cases 
+        run: |
+          # Run the LocalTest Cases
+          # https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_apex_commands_unified.htm
+          sf apex run test --target-org ${{ vars.SF_ALIAS }} --test-level ${{ env.TEST_LEVEL }} --code-coverage --result-format human --output-dir ./ --wait 10
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
       - name: Validate to Salesforce
         run: |
